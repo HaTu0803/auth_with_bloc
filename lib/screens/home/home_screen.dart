@@ -16,14 +16,14 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
-              context.read<AuthBloc>().add(SignOutRequested());
+              context.read<AuthBloc>().add(AuthLogoutStarted());
             },
           ),
         ],
       ),
       body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
-          if (state is Authenticated) {
+          if (state is AuthAuthenticated) {
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(

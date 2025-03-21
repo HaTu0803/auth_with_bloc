@@ -1,22 +1,40 @@
 part of 'auth_bloc.dart';
 
-@immutable
-abstract class AuthState {}
+sealed class AuthState {}
 
 class AuthInitial extends AuthState {}
 
-class AuthLoading extends AuthState {}
+class AuthLoginInProgress extends AuthState {}
 
-class Authenticated extends AuthState {
+class AuthLoginSuccess extends AuthState {
+  AuthLoginSuccess(this.user);
   final UserModel user;
-
-  Authenticated(this.user);
 }
 
-class Unauthenticated extends AuthState {}
-
-class AuthError extends AuthState {
+class AuthLoginFailure extends AuthState {
+  AuthLoginFailure(this.message);
   final String message;
+}
 
-  AuthError(this.message);
+class AuthRegisterInProgress extends AuthState {}
+
+class AuthRegisterSuccess extends AuthState {}
+
+class AuthRegisterFailure extends AuthState {
+  AuthRegisterFailure(this.message);
+  final String message;
+}
+
+class AuthAuthenticated extends AuthState {
+  AuthAuthenticated(this.user);
+  final UserModel user;
+}
+
+class AuthUnauthenticated extends AuthState {}
+
+class AuthLogoutSuccess extends AuthState {}
+
+class AuthLogoutFailure extends AuthState {
+  AuthLogoutFailure(this.message);
+  final String message;
 }

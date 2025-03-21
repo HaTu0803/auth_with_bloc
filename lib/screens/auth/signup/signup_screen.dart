@@ -66,9 +66,9 @@ class _SignupScreenState extends State<SignupScreen> {
         nameError == null) {
       // Use BLoC for signup
       context.read<AuthBloc>().add(
-        SignUpRequested(
-          emailController.text,
-          passwordController.text,
+        AuthRegisterStarted(
+          email: emailController.text,
+          password: passwordController.text,
           username: nameController.text,
         ),
       );
@@ -79,11 +79,11 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is AuthError) {
+        if (state is AuthRegisterFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message), backgroundColor: Colors.red),
           );
-        } else if (state is Authenticated) {
+        } else if (state is AuthRegisterSuccess) {
           // If signup is successful, navigate back to login or directly to home
           Navigator.of(context).pop();
         }
@@ -91,11 +91,6 @@ class _SignupScreenState extends State<SignupScreen> {
       builder: (context, state) {
         return Scaffold(
           resizeToAvoidBottomInset: true,
-          appBar: AppBar(
-            title: const Text('Create Account'),
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-          ),
           body: SafeArea(
             child: SingleChildScrollView(
               child: Column(
@@ -134,7 +129,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     obscureText: visibil,
                     errorText: confirmPasswordError,
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
                   signupButton(state),
                   const SizedBox(height: 20),
                   orDivider(),
@@ -198,7 +193,7 @@ class _SignupScreenState extends State<SignupScreen> {
         width: double.infinity,
         height: 50,
         child: ElevatedButton(
-          onPressed: state is AuthLoading ? null : validateSignUp,
+          onPressed: state is AuthRegisterInProgress ? null : validateSignUp,
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).primaryColor,
             foregroundColor: Colors.white, // Add this to ensure text is white
@@ -208,7 +203,7 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
           ),
           child:
-              state is AuthLoading
+              state is AuthRegisterInProgress
                   ? const SizedBox(
                     height: 24,
                     width: 24,
