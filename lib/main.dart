@@ -17,10 +17,13 @@ class MyApp extends StatelessWidget {
       create: (context) => AuthBloc()..add(AuthCheckRequested()),
       child: MaterialApp(
         title: 'Flutter Auth BLoC UI',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          scaffoldBackgroundColor: Colors.white,
           useMaterial3: true,
         ),
+
         home: const SplashScreen(),
       ),
     );
