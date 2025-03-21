@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AuthBloc()..add(AuthCheckRequested()),
+      create: (context) => AuthBloc()..add(AuthStarted()),
       child: MaterialApp(
         title: 'Flutter Auth BLoC UI',
         debugShowCheckedModeBanner: false,

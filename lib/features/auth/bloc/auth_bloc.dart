@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../models/user_model.dart';
@@ -9,120 +8,111 @@ part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  // Mock user for demonstration
   UserModel? _currentUser;
+  String? _authToken;
 
   AuthBloc() : super(AuthInitial()) {
-    on<AuthCheckRequested>(_onAuthCheckRequested);
-    on<SignInRequested>(_onSignInRequested);
-    on<SignUpRequested>(_onSignUpRequested);
-    on<SignOutRequested>(_onSignOutRequested);
+    on<AuthStarted>(_onAuthStarted);
+    on<AuthLoginStarted>(_onAuthLoginStarted);
+    on<AuthRegisterStarted>(_onAuthRegisterStarted);
+    on<AuthAuthenticateStarted>(_onAuthAuthenticateStarted);
+    on<AuthLogoutStarted>(_onAuthLogoutStarted);
   }
 
-  void _onAuthCheckRequested(
-    AuthCheckRequested event,
+  void _onAuthStarted(AuthStarted event, Emitter<AuthState> emit) {
+    add(AuthAuthenticateStarted());
+  }
+
+  void _onAuthAuthenticateStarted(
+    AuthAuthenticateStarted event,
     Emitter<AuthState> emit,
   ) {
-    // Simulate checking for existing session
-    if (_currentUser != null) {
-      emit(Authenticated(_currentUser!));
+    if (_authToken != null && _currentUser != null) {
+      emit(AuthAuthenticated(_currentUser!));
     } else {
-      emit(Unauthenticated());
+      emit(AuthUnauthenticated());
     }
   }
 
-  Future<void> _onSignInRequested(
-    SignInRequested event,
+  Future<void> _onAuthLoginStarted(
+    AuthLoginStarted event,
     Emitter<AuthState> emit,
   ) async {
-    emit(AuthLoading());
+    emit(AuthLoginInProgress());
 
-    // Simulate API delay
     await Future.delayed(const Duration(seconds: 2));
 
     try {
-      // Mock authentication logic
       if (event.email.isEmpty || event.password.isEmpty) {
-        emit(AuthError('Email and password cannot be empty'));
-        return;
-      }
-
-      if (!event.email.contains('@')) {
-        emit(AuthError('Please enter a valid email'));
+        emit(AuthLoginFailure('Email and password cannot be empty'));
         return;
       }
 
       if (event.password.length < 6) {
-        emit(AuthError('Password must be at least 6 characters'));
+        emit(AuthLoginFailure('Password must be at least 6 characters'));
         return;
       }
 
-      // Mock successful login
+      _authToken = 'token-${DateTime.now().millisecondsSinceEpoch}';
       _currentUser = UserModel(
         id: 'user-${DateTime.now().millisecondsSinceEpoch}',
         email: event.email,
       );
 
-      emit(Authenticated(_currentUser!));
+      emit(AuthLoginSuccess(_currentUser!));
+      emit(AuthAuthenticated(_currentUser!));
     } catch (e) {
-      emit(AuthError('An unexpected error occurred'));
+      emit(AuthLoginFailure('An unexpected error occurred'));
     }
   }
 
-  Future<void> _onSignUpRequested(
-    SignUpRequested event,
+  Future<void> _onAuthRegisterStarted(
+    AuthRegisterStarted event,
     Emitter<AuthState> emit,
   ) async {
-    emit(AuthLoading());
+    emit(AuthRegisterInProgress());
 
-    // Simulate API delay
     await Future.delayed(const Duration(seconds: 2));
 
     try {
-      // Mock registration logic
       if (event.email.isEmpty || event.password.isEmpty) {
-        emit(AuthError('Email and password cannot be empty'));
-        return;
-      }
-
-      if (!event.email.contains('@')) {
-        emit(AuthError('Please enter a valid email'));
+        emit(AuthRegisterFailure('Email and password cannot be empty'));
         return;
       }
 
       if (event.password.length < 6) {
-        emit(AuthError('Password must be at least 6 characters'));
+        emit(AuthRegisterFailure('Password must be at least 6 characters'));
         return;
       }
 
-      // Mock successful registration
+      _authToken = 'token-${DateTime.now().millisecondsSinceEpoch}';
       _currentUser = UserModel(
         id: 'user-${DateTime.now().millisecondsSinceEpoch}',
         email: event.email,
         username: event.username,
       );
 
-      emit(Authenticated(_currentUser!));
+      emit(AuthRegisterSuccess());
+      emit(AuthAuthenticated(_currentUser!));
     } catch (e) {
-      emit(AuthError('An unexpected error occurred'));
+      emit(AuthRegisterFailure('An unexpected error occurred'));
     }
   }
 
-  Future<void> _onSignOutRequested(
-    SignOutRequested event,
+  Future<void> _onAuthLogoutStarted(
+    AuthLogoutStarted event,
     Emitter<AuthState> emit,
   ) async {
-    emit(AuthLoading());
+    emit(AuthLogoutSuccess());
 
-    // Simulate API delay
     await Future.delayed(const Duration(milliseconds: 500));
 
     try {
-      // Mock sign out
+      _authToken = null;
       _currentUser = null;
-      emit(Unauthenticated());
+      emit(AuthUnauthenticated());
     } catch (e) {
-      emit(AuthError('Failed to sign out'));
+      emit(AuthLogoutFailure('Failed to sign out'));
     }
   }
 }
