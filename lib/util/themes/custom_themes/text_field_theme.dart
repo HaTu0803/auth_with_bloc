@@ -1,5 +1,6 @@
-import 'package:advancedmobile_chatai/util/themes/custom_themes/text_theme.dart';
+import 'package:authwithbloc/util/themes/custom_themes/text_theme.dart';
 import 'package:flutter/material.dart';
+
 import '../colors.dart';
 
 class TTextFormFieldTheme {
@@ -12,8 +13,12 @@ class TTextFormFieldTheme {
 
     labelStyle: TTextTheme.lightTextTheme.bodyMedium,
     hintStyle: TTextTheme.lightTextTheme.bodySmall,
-    errorStyle: TTextTheme.lightTextTheme.labelMedium?.copyWith(color: AppColors.error),
-    floatingLabelStyle: TTextTheme.lightTextTheme.bodyMedium?.copyWith(color: AppColors.textDark.withOpacity(0.8)),
+    errorStyle: TTextTheme.lightTextTheme.labelMedium?.copyWith(
+      color: AppColors.error,
+    ),
+    floatingLabelStyle: TTextTheme.lightTextTheme.bodyMedium?.copyWith(
+      color: AppColors.textDark.withOpacity(0.8),
+    ),
 
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
@@ -44,8 +49,12 @@ class TTextFormFieldTheme {
 
     labelStyle: TTextTheme.darkTextTheme.bodyMedium,
     hintStyle: TTextTheme.darkTextTheme.bodySmall,
-    errorStyle: TTextTheme.darkTextTheme.labelMedium?.copyWith(color: AppColors.error),
-    floatingLabelStyle: TTextTheme.darkTextTheme.bodyMedium?.copyWith(color: AppColors.textLight.withOpacity(0.8)),
+    errorStyle: TTextTheme.darkTextTheme.labelMedium?.copyWith(
+      color: AppColors.error,
+    ),
+    floatingLabelStyle: TTextTheme.darkTextTheme.bodyMedium?.copyWith(
+      color: AppColors.textLight.withOpacity(0.8),
+    ),
 
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),

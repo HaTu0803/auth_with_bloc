@@ -1,7 +1,8 @@
-import 'package:authwithbloc/screens/splash/splash_screen.dart';
+import 'package:authwithbloc/util/themes/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'config/router.dart';
 import 'features/auth/bloc/auth_bloc.dart';
 
 void main() {
@@ -18,27 +19,11 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Auth BLoC UI',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          scaffoldBackgroundColor: Colors.white,
-          useMaterial3: true,
-        ),
-
-        home: const SplashScreen(),
-      ),
-    );
-  }
-}
-
-extension ContextExtension on BuildContext {
-  void showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(this).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor:
-            isError
-                ? Theme.of(this).colorScheme.error
-                : Theme.of(this).colorScheme.primary,
+        theme: TAppTheme.lightTheme,
+        darkTheme: TAppTheme.darkTheme,
+        themeMode: ThemeMode.system,
+        onGenerateRoute: AppRouter.generateRoute, // Sử dụng router mới
+        initialRoute: '/', // Mặc định vào SplashScreen
       ),
     );
   }

@@ -1,4 +1,4 @@
-import 'package:authwithbloc/main.dart';
+import 'package:authwithbloc/screens/home/profile_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -9,143 +9,69 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              context.read<AuthBloc>().add(AuthLogoutStarted());
-            },
-          ),
-        ],
-      ),
-      body: BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, state) {
-          if (state is AuthAuthenticated) {
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // User profile card
-                  Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthUnauthenticated) {
+          Navigator.of(context).pushReplacementNamed('/login');
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Home'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () {
+                context.read<AuthBloc>().add(AuthLogoutStarted());
+              },
+            ),
+          ],
+        ),
+        body: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            if (state is AuthAuthenticated) {
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ProfileCard(user: state.user),
+
+                    const SizedBox(height: 32),
+
+                    Text(
+                      'Dashboard',
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 30,
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.primary,
-                                child: Text(
-                                  state.user.email
-                                      .substring(0, 1)
-                                      .toUpperCase(),
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      state.user.username ?? 'User',
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      state.user.email,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.grey[600],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          const Divider(),
-                          const SizedBox(height: 8),
-                          Text(
-                            'User ID: ${state.user.id}',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[600],
+                    const SizedBox(height: 16),
+
+                    // Dashboard Grid
+                    Expanded(
+                      child: GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
                             ),
-                          ),
-                        ],
+                        itemCount: dashboardItems.length,
+                        itemBuilder: (context, index) {
+                          return _buildDashboardItem(
+                            context,
+                            dashboardItems[index]['icon'],
+                            dashboardItems[index]['title'],
+                            dashboardItems[index]['onTap'],
+                          );
+                        },
                       ),
                     ),
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // Dashboard content
-                  Text(
-                    'Dashboard',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Mock dashboard items
-                  Expanded(
-                    child: GridView.count(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      children: [
-                        _buildDashboardItem(
-                          context,
-                          Icons.person_outline,
-                          'Profile',
-                          () => context.showSnackBar('Profile clicked'),
-                        ),
-                        _buildDashboardItem(
-                          context,
-                          Icons.settings_outlined,
-                          'Settings',
-                          () => context.showSnackBar('Settings clicked'),
-                        ),
-                        _buildDashboardItem(
-                          context,
-                          Icons.notifications_outlined,
-                          'Notifications',
-                          () => context.showSnackBar('Notifications clicked'),
-                        ),
-                        _buildDashboardItem(
-                          context,
-                          Icons.help_outline,
-                          'Help',
-                          () => context.showSnackBar('Help clicked'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
+                  ],
+                ),
+              );
+            }
+            return const Center(child: CircularProgressIndicator());
+          },
+        ),
       ),
     );
   }
@@ -181,3 +107,27 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+
+// Mock data cho dashboard
+final List<Map<String, dynamic>> dashboardItems = [
+  {
+    'icon': Icons.person_outline,
+    'title': 'Profile',
+    'onTap': () => debugPrint('Profile clicked'),
+  },
+  {
+    'icon': Icons.settings_outlined,
+    'title': 'Settings',
+    'onTap': () => debugPrint('Settings clicked'),
+  },
+  {
+    'icon': Icons.notifications_outlined,
+    'title': 'Notifications',
+    'onTap': () => debugPrint('Notifications clicked'),
+  },
+  {
+    'icon': Icons.help_outline,
+    'title': 'Help',
+    'onTap': () => debugPrint('Help clicked'),
+  },
+];

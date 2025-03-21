@@ -1,4 +1,4 @@
-import 'package:advancedmobile_chatai/util/themes/custom_themes/text_theme.dart';
+import 'package:authwithbloc/util/themes/custom_themes/text_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../colors.dart';
@@ -12,9 +12,9 @@ class TOutlinedButtonTheme {
       foregroundColor: AppColors.textDark,
       side: const BorderSide(color: AppColors.primary),
       textStyle: TTextTheme.lightTextTheme.labelLarge,
-      padding: const EdgeInsets.symmetric (vertical : 16, horizontal : 20),
-      shape: RoundedRectangleBorder (borderRadius: BorderRadius.circular (14)),
-    )
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+    ),
   ); // outlinedButtonTheneData
 
   static final DarkOutlinedButtonTheme = OutlinedButtonThemeData(
@@ -23,8 +23,8 @@ class TOutlinedButtonTheme {
       foregroundColor: AppColors.textLight,
       side: const BorderSide(color: AppColors.primaryDark),
       textStyle: TTextTheme.darkTextTheme.labelLarge,
-      padding: const EdgeInsets.symmetric (vertical : 16, horizontal : 20),
-      shape: RoundedRectangleBorder (borderRadius: BorderRadius.circular (14)),
-    )
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+    ),
   ); // outlinedButtonTheneData
 }

@@ -64,7 +64,6 @@ class _SignupScreenState extends State<SignupScreen> {
         passwordError == null &&
         confirmPasswordError == null &&
         nameError == null) {
-      // Use BLoC for signup
       context.read<AuthBloc>().add(
         AuthRegisterStarted(
           email: emailController.text,
@@ -77,80 +76,84 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state is AuthRegisterFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
-          );
-        } else if (state is AuthRegisterSuccess) {
-          // If signup is successful, navigate back to login or directly to home
-          Navigator.of(context).pop();
-        }
-      },
-      builder: (context, state) {
-        return Scaffold(
-          resizeToAvoidBottomInset: true,
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 10),
-                  logo(),
-                  const SizedBox(height: 20),
-                  inputField(
-                    emailController,
-                    "Email",
-                    Icons.email,
-                    errorText: emailError,
-                  ),
-                  const SizedBox(height: 20),
-                  inputField(
-                    nameController,
-                    "Name",
-                    Icons.person,
-                    errorText: nameError,
-                  ),
-                  const SizedBox(height: 20),
-                  inputField(
-                    passwordController,
-                    "Password",
-                    Icons.lock,
-                    obscureText: visibil,
-                    suffixIcon: true,
-                    errorText: passwordError,
-                  ),
-                  const SizedBox(height: 20),
-                  inputField(
-                    confirmPasswordController,
-                    "Confirm Password",
-                    Icons.lock,
-                    obscureText: visibil,
-                    errorText: confirmPasswordError,
-                  ),
-                  const SizedBox(height: 30),
-                  signupButton(state),
-                  const SizedBox(height: 20),
-                  orDivider(),
-                  const SizedBox(height: 30),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      socialLoginButton('images/google.png'),
-                      const SizedBox(width: 20),
-                      socialLoginButton('', icon: Icons.apple),
-                    ],
-                  ),
-                  const SizedBox(height: 40),
-                  haveAccountText(),
-                  const SizedBox(height: 20),
-                ],
-              ),
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      body: SafeArea(
+        child: BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is AuthRegisterFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            } else if (state is AuthRegisterSuccess) {
+              Navigator.of(context).pop();
+            }
+          },
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 10),
+                logo(),
+                const SizedBox(height: 20),
+                inputField(
+                  emailController,
+                  "Email",
+                  Icons.email,
+                  errorText: emailError,
+                ),
+                const SizedBox(height: 20),
+                inputField(
+                  nameController,
+                  "Name",
+                  Icons.person,
+                  errorText: nameError,
+                ),
+                const SizedBox(height: 20),
+                inputField(
+                  passwordController,
+                  "Password",
+                  Icons.lock,
+                  obscureText: visibil,
+                  suffixIcon: true,
+                  errorText: passwordError,
+                ),
+                const SizedBox(height: 20),
+                inputField(
+                  confirmPasswordController,
+                  "Confirm Password",
+                  Icons.lock,
+                  obscureText: visibil,
+                  errorText: confirmPasswordError,
+                ),
+                const SizedBox(height: 30),
+                BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    return signupButton(state);
+                  },
+                ),
+                const SizedBox(height: 20),
+                orDivider(),
+                const SizedBox(height: 30),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    socialLoginButton('images/google.png'),
+                    const SizedBox(width: 20),
+                    socialLoginButton('', icon: Icons.apple),
+                  ],
+                ),
+                const SizedBox(height: 40),
+                haveAccountText(),
+                const SizedBox(height: 20),
+              ],
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -196,7 +199,7 @@ class _SignupScreenState extends State<SignupScreen> {
           onPressed: state is AuthRegisterInProgress ? null : validateSignUp,
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).primaryColor,
-            foregroundColor: Colors.white, // Add this to ensure text is white
+            foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 8),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
@@ -214,7 +217,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white, // Explicitly set text color
+                      color: Colors.white,
                     ),
                   ),
         ),
@@ -271,12 +274,12 @@ class _SignupScreenState extends State<SignupScreen> {
           ),
           GestureDetector(
             onTap: () => Navigator.pop(context),
-            child: const Text(
+            child: Text(
               " Login",
               style: TextStyle(
+                color: Theme.of(context).primaryColor,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.blue,
               ),
             ),
           ),
@@ -288,26 +291,7 @@ class _SignupScreenState extends State<SignupScreen> {
   Padding logo() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 50),
-      child: Image.asset(
-        'images/logo.png',
-        width: 160,
-        height: 160,
-        errorBuilder: (context, error, stackTrace) {
-          return Container(
-            width: 160,
-            height: 160,
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.person_outline_rounded,
-              size: 80,
-              color: Theme.of(context).primaryColor,
-            ),
-          );
-        },
-      ),
+      child: Image.asset('images/logo.png', width: 160, height: 160),
     );
   }
 }
